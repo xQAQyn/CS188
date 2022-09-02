@@ -35,7 +35,16 @@ def buyLotsOfFruit(orderList):
     Returns cost of order
     """
     totalCost = 0.0
-    "*** YOUR CODE HERE ***"
+    for item, pound in orderList:
+        price = -1
+        for fruit,val in fruitPrices.items():
+            if fruit == item:
+                price = val
+                break
+        if price == -1:
+            print("Error")
+            return None
+        totalCost += price * pound
     return totalCost
 
 
