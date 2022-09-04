@@ -73,10 +73,11 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 class Node:
-    def __init__(self,state,pre,action):
+    def __init__(self,state,pre,action,cost=0):
         self.pre = pre
         self.state = state
         self.action = action
+        self.cost = cost
 
 def depthFirstSearch(problem):
     """
@@ -117,7 +118,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     closed = set()
-    running = util.Stack()
+    running = util.Queue()
     running.push(Node(problem.getStartState(),None,None))
     while running.isEmpty() is not True:
         u = running.pop()
@@ -132,12 +133,27 @@ def breadthFirstSearch(problem):
             closed.add(u.state)
             for state, action, cost in problem.getSuccessors(u.state):
                 running.push(Node(state,u,action))
-    util.raiseNotDefined()
+    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    closed  = set()
+    running = util.PriorityQueue()
+    running.update(Node(problem.getStartState(),None,None,0),0)
+    while running.isEmpty() is not True:
+        u = running.pop()
+        if problem.isGoalState(u.state):
+            actions = []
+            while u.action != None:
+                actions.append(u.action)
+                u = u.pre
+            actions.reverse()
+            return actions
+        elif u.state not in closed:
+            closed.add(u.state)
+            for state, action, cost in problem.getSuccessors(u.state):
+                running.update(Node(state, u, action,u.cost+cost),u.cost+cost)
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -148,8 +164,23 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    closed = set()
+    running = util.PriorityQueue()
+    running.update(Node(problem.getStartState(), None, None, 0), 0)
+    while running.isEmpty() is not True:
+        u = running.pop()
+        if problem.isGoalState(u.state):
+            actions = []
+            while u.action != None:
+                actions.append(u.action)
+                u = u.pre
+            actions.reverse()
+            return actions
+        elif u.state not in closed:
+            closed.add(u.state)
+            for state, action, cost in problem.getSuccessors(u.state):
+                running.update(Node(state, u, action, u.cost + cost), u.cost + cost + heuristic(state,problem))
+    return []
 
 
 # Abbreviations
